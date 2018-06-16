@@ -1,0 +1,97 @@
+<script>
+  window.onload = function () {
+
+    var dataPoints1 = [];
+    var dataPoints2 = [];
+
+    var chart = new CanvasJS.Chart("chartContainer", {
+      zoomEnabled: true,
+      title: {
+        text: "Bitcoin live price with SMA indicator"
+      },
+      axisX: {
+        title: "chart will update every 5 secs  (btc ticker service might block consecutive requests after a while) "
+      },
+      axisY:{
+        prefix: "$",
+        includeZero: false
+      },
+      toolTip: {
+        shared: true
+      },
+      legend: {
+        cursor:"pointer",
+        verticalAlign: "top",
+        fontSize: 22,
+        fontColor: "dimGrey",
+        itemclick : toggleDataSeries
+      },
+      data: [{
+        type: "line",
+        xValueType: "dateTime",
+        yValueFormatString: "$####.00",
+        xValueFormatString: "hh:mm:ss TT",
+        showInLegend: true,
+        name: "Bitcoin Price",
+        dataPoints: dataPoints1
+      },
+        {
+          type: "line",
+          xValueType: "dateTime",
+          yValueFormatString: "$####.00",
+          showInLegend: true,
+          name: "25 sec SMA" ,
+          dataPoints: dataPoints2
+        }]
+    });
+
+    function toggleDataSeries(e) {
+      if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+        e.dataSeries.visible = false;
+      }
+      else {
+        e.dataSeries.visible = true;
+      }
+      chart.render();
+    }
+
+    var updateInterval = 5000;
+
+
+    var time = new Date;
+
+    function updateChart(data) {
+
+      // updating legend text with  updated with y1 , y2 Value
+      time.setTime(time.getTime()+ updateInterval);
+      dataPoints1.push({
+        x: time.getTime(),
+        y: parseFloat(data.y1)
+      });
+      dataPoints2.push({
+        x: time.getTime(),
+        y: parseFloat(data.y2)
+      });
+      chart.options.data[0].legendText = " Bitcoin Price  $" + data.y1;
+      chart.options.data[1].legendText = " 25 sec SMA $" + data.y2;
+      chart.render();
+    }
+
+    var mySocket = io.sails.connect();
+
+    mySocket.get("/connectBtcPriceSocket", function(data){
+
+    });
+
+    mySocket.on('priceInfo', function(data) {
+      //console.log(data);
+      updateChart(data);
+    });
+
+
+  }
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>

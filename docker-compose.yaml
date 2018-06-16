@@ -1,0 +1,15 @@
+version: '3.3'
+
+services:
+  btc_live_monitor:
+    restart: always
+    image: btc_live_monitor
+    container_name: btc_live_monitor
+    build: .
+    ports:
+      - 1337:1337
+    networks:
+      - custom_network
+networks:
+  custom_network:
+    driver: bridge
