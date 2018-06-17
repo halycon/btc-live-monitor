@@ -22,12 +22,15 @@
   "devDependencies": {
     "@sailshq/eslint": "^4.19.3",
     "mocha": "^5.2.0",
+    "sonar-scanner": "^3.1.0",
+    "sonarqube-scanner": "^2.0.2",
     "supertest": "^3.1.0"
   },
   "scripts": {
     "start": "NODE_ENV=production node app.js",
     "test": "npm run lint && ./node_modules/mocha/bin/mocha test/*test.js && echo 'Done.' ",
     "lint": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",
+    "sonar-scanner": "node_modules/sonar-scanner/bin/sonar-scanner",
     "custom-tests": "echo \"(No other custom tests yet.)\" && echo"
   },
   "main": "app.js",
